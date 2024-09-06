@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Form</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState } = React; // Import useState from React
+
+    function DynamicForm() {
+      // State to manage the list of input fields
+      const [inputs, setInputs] = useState([{ id: Date.now(), value: '' }]);
+
+      // Handler to add a new input field
+      const addInput = () => {
+        setInputs([...inputs, { id: Date.now(), value: '' }]);
+      };
+
+      // Handler to remove an input field by id
+      const removeInput = (id) => {
+        setInputs(inputs.filter(input => input.id !== id));
+      };
+
+      // Handler to handle input change
+      const handleChange = (id, value) => {
+        setInputs(inputs.map(input => input.id === id ? { ...input, value } : input));
+      };
+
+      // Handler to handle form submission
+      const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log(inputs.map(input => input.value));
+      };
+
+      return (
+        <form onSubmit={handleSubmit}>
+          {inputs.map((input, index) => (
+            <div key={input.id} style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                value={input.value}
+                onChange={(e) => handleChange(input.id, e.target.value)}
+                placeholder={`Input ${index + 1}`}
+              />
+              {inputs.length > 1 && index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => removeInput(input.id)}
+                  style={{ marginLeft: '10px' }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+          <button type="button" onClick={addInput}>
+            Add Input
+          </button>
+          <button type="submit" style={{ marginTop: '10px' }}>
+            Submit
+          </button>
+        </form>
+      );
+    }
+
+    const rootElement = document.getElementById("root");
+    ReactDOM.render(<DynamicForm />, rootElement); // Use ReactDOM.render for UMD build
+  </script>
+</html>
